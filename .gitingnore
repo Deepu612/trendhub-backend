@@ -1,0 +1,81 @@
+# ============================
+# Node Modules
+# ============================
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# ============================
+# Environment Files
+# ============================
+.env
+.env.*.local
+.env.local
+.env.development.local
+.env.production.local
+.env.test.local
+
+# ============================
+# Logs
+# ============================
+logs/
+*.log
+logs/*.log
+debug.log
+
+# ============================
+# OS / System Files
+# ============================
+.DS_Store
+Thumbs.db
+
+# ============================
+# Build / Cache
+# ============================
+dist/
+build/
+.cache/
+.temp/
+.tmp/
+coverage/
+
+# TypeScript
+*.tsbuildinfo
+
+# ============================
+# IDE / Editor Files
+# ============================
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+
+# ============================
+# Sequelize Auto Files
+# ============================
+migrations/*.js.map
+seeders/*.js.map
+
+# ============================
+# ZIP / Archive Files
+# ============================
+*.zip
+*.tar
+*.gz
+*.rar
+
+# ============================
+# Uploaded Files (If any)
+# ============================
+uploads/
+public/uploads/
+
+# ============================
+# Other
+# ============================
+*.pid
+*.pid.lock
