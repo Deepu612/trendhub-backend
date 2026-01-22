@@ -1,40 +1,60 @@
 const express = require("express");
+const sequelize = require("./config/db");
+const { User } = require("./models");
+const upload = require("./middlewares/multer.middleware");
 const app = express();
 
 app.use(express.json());
+
+// ✅ MULTER MIDDLEWARE - Apply to all routes
+app.use(upload.any()); // any() = ek ya zyada files le sakta hai
 
 // SAFE IMPORT HELPERS
 function safeUseRoute(path, routePath) {
   try {
     const route = require(routePath);
-    if (typeof route !== "function") {
-      console.error(` Route is not a function: ${routePath}`);
+    // Check if it's a valid route (function or express router)
+    if (typeof route !== "function" && !route.stack) {
+      console.error(` Route is not valid: ${routePath}`);
       return;
     }
     app.use(path, route);
-    console.log(` Loaded route: ${path}`);
+    console.log(` ✅ Loaded route: ${path}`);
   } catch (err) {
-    console.error(` Failed to load route ${routePath}:`, err.message);
+    console.error(` ❌ Failed to load route ${routePath}:`, err.message);
   }
 }
 
 // -------------------------
 // SAFE ROUTE REGISTER
 // -------------------------
-// safeUseRoute("/api/auth", "./modules/auth/auth.routes");
+safeUseRoute("/api/auth", "./modules/auth/auth.routes");
 // safeUseRoute("/api/products", "./modules/products/product.routes");
 // safeUseRoute("/api/variants", "./modules/variants/variant.routes");
 // safeUseRoute("/api/media", "./modules/media/media.routes");
 
 // -------------------------
-// DEFAULT HEALTH CHECK ROUTE
+// DEFAULT HEALTH CHECK ROUTE + DB TEST
 // -------------------------
-app.get("/", (req, res) => {
-  res.json({
-    success: true,
-    message: "Server is working 🚀",
-    uptime: process.uptime(),
-  });
+app.get("/", async (req, res) => {
+
+  
+  try {
+    await sequelize.authenticate();
+    res.json({
+      success: true,
+      message: "Server is working 🚀",
+      database: "✅ Connected",
+      uptime: process.uptime(),
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Server is working but Database connection failed",
+      database: "❌ Disconnected",
+      error: error.message,
+    });
+  }
 });
 
 // -------------------------
