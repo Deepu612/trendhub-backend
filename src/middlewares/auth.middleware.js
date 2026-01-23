@@ -1,31 +1,42 @@
 const jwt = require("jsonwebtoken");
 const { error } = require("../utils/response");
+const UserSession = require("../models/UserSession");  // to verify session is alive
 
-// Verify JWT Token Middleware
-const authMiddleware = (req, res, next) => {
+const authMiddleware = async (req, res, next) => {
   try {
-    // Get token from headers
-    const token = req.headers.authorization?.split(" ")[1]; // "Bearer token" se token nikal lo
-
+    // Token is required
+    const token = req.headers.authorization?.split(" ")[1];
     if (!token) {
-      return error(res, "Token is required", 401);
+      return error(res, "TOKEN_REQUIRED", 401);
     }
 
-    // Verify token
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    // Verify access token
+    let decoded;
+    try {
+      decoded = jwt.verify(token, process.env.JWT_SECRET);
+    } catch (err) {
+      if (err.name === "TokenExpiredError") {
+        return error(res, "ACCESS_TOKEN_EXPIRED", 401);
+      }
+      return error(res, "INVALID_ACCESS_TOKEN", 401);
+    }
 
-    // Attach user info to request
+    // Check if user session exists (global logout case)
+    // OPTION: If you want strict session verification for each request:
+    const sessionExists = await UserSession.findOne({
+      where: { user_id: decoded.id }
+    });
+
+    if (!sessionExists) {
+      return error(res, "SESSION_EXPIRED", 401);
+    }
+
     req.user = decoded;
-
     next();
+
   } catch (err) {
-    if (err.name === "TokenExpiredError") {
-      return error(res, "Token has expired", 401);
-    }
-    if (err.name === "JsonWebTokenError") {
-      return error(res, "Invalid token", 401);
-    }
-    return error(res, "Authentication failed", 401);
+    console.error("AUTH ERROR:", err.message);
+    return error(res, "AUTHENTICATION_FAILED", 401);
   }
 };
 

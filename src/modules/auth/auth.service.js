@@ -1,14 +1,16 @@
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const User = require("../../models").User; // Assuming User model exists
+const UserSession= require("../../models").UserSession;
+const crypto = require("crypto");
 
 // Require dotenv
 require("dotenv").config();
 
 // Login Service
-const loginUser = async (email, password) => {
+const loginUser = async (email, password, deviceInfo) => {
   try {
-    // Check if user exists
+    // 1) Check user exist
     const user = await User.findOne({ where: { email } });
 
     if (!user) {
@@ -19,9 +21,8 @@ const loginUser = async (email, password) => {
       };
     }
 
-    // Compare passwords
+    // 2) Compare passwords
     const isPasswordValid = await bcrypt.compare(password, user.password);
-
     if (!isPasswordValid) {
       return {
         success: false,
@@ -30,13 +31,24 @@ const loginUser = async (email, password) => {
       };
     }
 
-    // Generate JWT token
-    const token = jwt.sign(
-      { id: user.id, email: user.email },
-      process.env.JWT_SECRET || "your-secret-key",
-      { expiresIn: "7d" }
+    // 3) Create Access Token (3 hours)
+    const accessToken = jwt.sign(
+      { id: user.id },
+      process.env.JWT_SECRET,
+      { expiresIn: "3h" }
     );
 
+    // 4) Create Refresh Token (long-lived)
+    const refreshToken = crypto.randomUUID();
+
+    // 5) Store refresh token session
+    await UserSession.create({
+      user_id: user.id,
+      refresh_token: refreshToken,
+      device_info: deviceInfo
+    });
+
+    // 6) Success response
     return {
       success: true,
       message: "Login successful",
@@ -47,9 +59,11 @@ const loginUser = async (email, password) => {
         first_name: user.first_name,
         last_name: user.last_name,
         phone: user.phone,
-        token,
+        accessToken,
+        refreshToken,
       },
     };
+
   } catch (err) {
     console.error("Login service error:", err.message);
     return {
@@ -59,6 +73,9 @@ const loginUser = async (email, password) => {
     };
   }
 };
+
+
+
 
 // Register Service
 const registerUser = async (userData) => {
@@ -173,7 +190,9 @@ const changePassword = async (userId, oldPassword, newPassword, confirmPassword)
   return { message: "Password updated successfully" };
 };
 
-
+const logoutUser=async(userId)=>{
+  
+}
 
 
 module.exports = {

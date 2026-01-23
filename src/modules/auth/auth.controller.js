@@ -1,5 +1,6 @@
 const { success, error } = require("../../utils/response");
 const authService = require("./auth.service");
+const UserSession= require("../../models/UserSession");
 
 // Login Controller
 const login = async (req, res) => {
@@ -11,19 +12,24 @@ const login = async (req, res) => {
       return error(res, "Email and password are required", 400);
     }
 
+    // Get device info from headers
+    const deviceInfo = req.headers["user-agent"] || "Unknown Device";
+
     // Call service
-    const result = await authService.loginUser(email, password);
+    const result = await authService.loginUser(email, password, deviceInfo);
 
     if (!result.success) {
       return error(res, result.message, result.statusCode || 401);
     }
 
     return success(res, result.data, result.message, 200);
+
   } catch (err) {
     console.error("Login error:", err.message);
     return error(res, "Internal server error", 500);
   }
 };
+
 
 // Register Controller
 const register = async (req, res) => {
@@ -93,8 +99,21 @@ const changePassword = async (req, res) => {
   }
 };
 
+const logout=async (req,res) => {
+
+  try {
+    const {id}=req.user;
+    const result= await authService.logoutUser(id);
+    result.success(res,result.message);
+  } catch (error) {
+    console.error("logout user error::", err.message);
+    return error(res, err.message || "Internal server error", err.status || 500);
+  }
+}
+
 module.exports = {
   login,
+  logout,
   register,
   getDetails,
   changePassword,

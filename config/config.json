@@ -1,0 +1,16 @@
+{
+  "development": {
+    "username": "deepu",
+    "password": "Deepu@612",
+    "database": "trend_hub",
+    "host": "localhost",
+    "dialect": "mysql"
+  },
+  "production": {
+    "username": "root",
+    "password": "",
+    "database": "trendhub",
+    "host": "127.0.0.1",
+    "dialect": "mysql"
+  }
+}
