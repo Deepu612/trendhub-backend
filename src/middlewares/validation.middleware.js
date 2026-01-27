@@ -3,7 +3,36 @@ const { error } = require("../utils/response");
 const bcrypt = require("bcrypt");
 const User = require("../models/User");
 
-// Register Validation
+
+const validateAddUser = [
+  body("first_name")
+    .notEmpty().withMessage("First name is required")
+    .isString().withMessage("First name must be a string"),
+
+  body("last_name")
+    .notEmpty().withMessage("Last name is required"),
+
+  body("email")
+    .notEmpty().withMessage("Email is required")
+    .isEmail().withMessage("Invalid email format"),
+
+  body("password")
+    .notEmpty().withMessage("Password is required")
+    .isLength({ min: 6 }).withMessage("Password must be at least 6 characters"),
+
+  body("phone")
+    .notEmpty().withMessage("Phone is required"),
+
+  body("country_code")
+    .optional()
+    .isString().withMessage("Country code must be string"),
+
+  body("dialer_code")
+    .optional()
+    .isString().withMessage("Dialer code must be string"),
+];
+
+
 const validateRegister = [
   body("first_name")
     .trim()
@@ -145,5 +174,6 @@ module.exports = {
   validateRegister,
   validateLogin,
   validateChangePassword,
+  validateAddUser,
   handleValidationErrors,
 };

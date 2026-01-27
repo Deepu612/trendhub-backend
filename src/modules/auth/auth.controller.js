@@ -99,17 +99,18 @@ const changePassword = async (req, res) => {
   }
 };
 
-const logout=async (req,res) => {
-
+const logout = async (req, res) => {
   try {
-    const {id}=req.user;
-    const result= await authService.logoutUser(id);
-    result.success(res,result.message);
-  } catch (error) {
-    console.error("logout user error::", err.message);
-    return error(res, err.message || "Internal server error", err.status || 500);
+    const { refreshToken } = req.body;
+
+    const result = await authService.logoutUser(refreshToken);
+
+    return success(res, result.message);
+  } catch (err) {
+    return error(res, err.message, err.status || 500);
   }
-}
+};
+
 
 module.exports = {
   login,

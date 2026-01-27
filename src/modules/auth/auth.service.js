@@ -190,12 +190,30 @@ const changePassword = async (userId, oldPassword, newPassword, confirmPassword)
   return { message: "Password updated successfully" };
 };
 
-const logoutUser=async(userId)=>{
-  
-}
+const logoutUser = async (refreshToken) => {
+  if (!refreshToken) {
+    throw { status: 400, message: "Refresh token is required" };
+  }
+
+  const session = await UserSession.findOne({
+    where: { refresh_token: refreshToken }
+  });
+
+  if (!session) {
+    throw { status: 401, message: "Invalid refresh token" };
+  }
+
+  await UserSession.destroy({
+    where: { refresh_token: refreshToken }
+  });
+
+  return { message: "Logged out successfully" };
+};
+
 
 
 module.exports = {
+  logoutUser,
   changePassword,
   loginUser,
   registerUser,

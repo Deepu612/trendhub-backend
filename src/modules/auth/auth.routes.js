@@ -14,7 +14,7 @@ router.post("/register", validateRegister, handleValidationErrors, authControlle
 router.post("/login", validateLogin, handleValidationErrors, authController.login);
 
 router.get("/details", authMiddleware, authController.getDetails);
-// router.post("/logout", authMiddleware, authController.logout);
+router.post("/logout", authMiddleware, authController.logout);
 router.post("/change-password", authMiddleware, validateChangePassword, handleValidationErrors, authController.changePassword);
 
 

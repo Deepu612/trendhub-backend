@@ -29,7 +29,7 @@ function safeUseRoute(path, routePath) {
 // SAFE ROUTE REGISTER
 // -------------------------
 safeUseRoute("/api/auth", "./modules/auth/auth.routes");
-// safeUseRoute("/api/products", "./modules/products/product.routes");
+safeUseRoute("/api/user", "./modules/user/user.routes");
 // safeUseRoute("/api/variants", "./modules/variants/variant.routes");
 // safeUseRoute("/api/media", "./modules/media/media.routes");
 
