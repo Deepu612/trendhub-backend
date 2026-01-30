@@ -30,6 +30,7 @@ function safeUseRoute(path, routePath) {
 // -------------------------
 safeUseRoute("/api/auth", "./modules/auth/auth.routes");
 safeUseRoute("/api/user", "./modules/user/user.routes");
+safeUseRoute("/api/attribute", "./modules/attribute/attribute.routes");
 // safeUseRoute("/api/variants", "./modules/variants/variant.routes");
 // safeUseRoute("/api/media", "./modules/media/media.routes");
 

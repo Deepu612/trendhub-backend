@@ -4,6 +4,30 @@ const bcrypt = require("bcrypt");
 const User = require("../models/User");
 
 
+const validateUpdateUser = [
+  body("first_name")
+    .notEmpty().withMessage("First name is required")
+    .isString().withMessage("First name must be a string"),
+
+  body("last_name")
+    .notEmpty().withMessage("Last name is required"),
+
+  body("email")
+    .notEmpty().withMessage("Email is required")
+    .isEmail().withMessage("Invalid email format"),
+
+  body("phone")
+    .notEmpty().withMessage("Phone is required"),
+
+  body("country_code")
+    .optional()
+    .isString().withMessage("Country code must be string"),
+
+  body("dialer_code")
+    .optional()
+    .isString().withMessage("Dialer code must be string"),
+];
+
 const validateAddUser = [
   body("first_name")
     .notEmpty().withMessage("First name is required")
@@ -171,6 +195,7 @@ const handleValidationErrors = (req, res, next) => {
 };
 
 module.exports = {
+  validateUpdateUser,
   validateRegister,
   validateLogin,
   validateChangePassword,

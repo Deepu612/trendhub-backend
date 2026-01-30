@@ -19,7 +19,7 @@ const UserRole = sequelize.define(
     }
   },
   {
-    tableName: "user_roles",
+    tableName: "role_users",
     timestamps: false
   }
 );
